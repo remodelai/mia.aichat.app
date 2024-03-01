@@ -158,7 +158,8 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 8, 0),
                                   height: 16,
                                   child: const Image(
                                     image: AssetImage('images/arrow_icon.png'),

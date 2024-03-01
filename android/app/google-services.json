@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "737410544698",
+    "project_id": "mia-ai-companion",
+    "storage_bucket": "mia-ai-companion.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737410544698:android:0dfc4ec2ea08393653f103",
+        "android_client_info": {
+          "package_name": "com.tauseef.whatsappclone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN4gbqjwh9ZCKfnTxOkSB4Wsl4ZOW5GCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737410544698:android:cb452f26c7d6fa0253f103",
+        "android_client_info": {
+          "package_name": "mia.aichat.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN4gbqjwh9ZCKfnTxOkSB4Wsl4ZOW5GCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

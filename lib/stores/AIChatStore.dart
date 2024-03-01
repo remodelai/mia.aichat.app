@@ -6,6 +6,8 @@ class AIChatStore extends ChangeNotifier {
     syncStorage();
   }
 
+  bool enableHistory = false;
+
   String chatListKey = 'chatList';
 /*
 chat
@@ -161,7 +163,9 @@ chat
   }
 
   Future pushStreamMessage(String chatId, int messageIndex, Map message) async {
-    if (chatId != '' && message['content'] != '' && message['content'] != null) {
+    if (chatId != '' &&
+        message['content'] != '' &&
+        message['content'] != null) {
       final index = chatList.indexWhere((v) => v['id'] == chatId);
       Map current = chatList[index]['messages'][messageIndex];
 
