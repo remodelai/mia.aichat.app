@@ -29,6 +29,7 @@ class _QuestionInputState extends State<QuestionInput> {
   final FocusNode focusNode = FocusNode();
   TextEditingController questionController = TextEditingController();
   bool _isGenerating = false;
+  bool _isVoiceInput = false;
   String myQuestion = '';
 
   @override
@@ -140,6 +141,7 @@ class _QuestionInputState extends State<QuestionInput> {
     setState(() {
       questionController.clear();
       myQuestion = '';
+      focusNode.requestFocus();
     });
 
     Map message = {
@@ -235,6 +237,29 @@ class _QuestionInputState extends State<QuestionInput> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Container(
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.0),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: IconButton(
+                style: ElevatedButton.styleFrom(
+                  splashFactory: NoSplash.splashFactory,
+                ),
+                icon: Icon(
+                  _isVoiceInput
+                      ? Icons.keyboard
+                      : Icons.record_voice_over_rounded,
+                  size: 22,
+                ),
+                color: const Color.fromARGB(255, 145, 145, 145),
+                onPressed: () {
+                  setState(() {
+                    _isVoiceInput = !_isVoiceInput;
+                  });
+                },
+              )),
           Expanded(
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 4, 8, 4),
@@ -262,7 +287,7 @@ class _QuestionInputState extends State<QuestionInput> {
                         textBaseline: TextBaseline.alphabetic,
                       ),
                       onChanged: onQuestionChange,
-                      textInputAction: TextInputAction.search,
+                      textInputAction: TextInputAction.send,
                       textCapitalization: TextCapitalization.words,
                       enableInteractiveSelection: true,
                       onSubmitted: (String value) {
@@ -301,7 +326,8 @@ class _QuestionInputState extends State<QuestionInput> {
         padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
         width: 50,
         child: Image(
-          image: AssetImage('images/${isActive ? 'submit_active_icon' : 'submit_icon'}.png'),
+          image: AssetImage(
+              'images/${isActive ? 'submit_active_icon' : 'submit_icon'}.png'),
         ),
       ),
     );
