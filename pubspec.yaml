@@ -28,6 +28,9 @@ dependencies:
   provider: ^6.0.5
   flutter_tts: ^3.6.3
   firebase_core: ^2.25.5
+  audioplayers: ^5.2.1
+  path_provider: ^2.0.2 # Adjust for the latest version
+  voice_message_package: ^2.1.4
 
 dev_dependencies:
   flutter_test:
@@ -40,4 +43,6 @@ flutter:
   uses-material-design: true
   assets:
     - images/
+    - sounds/
+    - images/chat/
     - .env

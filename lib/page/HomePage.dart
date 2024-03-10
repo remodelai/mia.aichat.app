@@ -9,6 +9,7 @@ import 'package:aichat/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aichat/stores/AIChatStore.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -135,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (store.homeHistoryList.length > 0)
+                    if (store.homeHistoryList.length > 0 && store.enableHistory)
                       _renderTitle(
                         'History',
                         rightContent: SizedBox(
@@ -170,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                    if (store.homeHistoryList.length > 0)
+                    if (store.homeHistoryList.length > 0 && store.enableHistory)
                       _renderChatListWidget(
                         store.homeHistoryList,
                       ),

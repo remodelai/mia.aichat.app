@@ -1,22 +1,18 @@
-import 'dart:typed_data';
-
 import 'package:aichat/utils/Chatgpt.dart';
-import 'package:aichat/utils/ElevenLabs.dart';
 import 'package:flutter/material.dart';
 import 'package:aichat/stores/AIChatStore.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
-GlobalKey<_QuestionInputState> globalQuestionInputKey = GlobalKey();
+GlobalKey<_QuestionInputVoiceEnabledState> globalQuestionInputKey = GlobalKey();
 
-class QuestionInput extends StatefulWidget {
+class QuestionInputVoiceEnabled extends StatefulWidget {
   final Map chat;
   final bool autofocus;
   final bool enabled;
   final Function? scrollToBottom;
   final Function? onGeneratingStatusChange;
 
-  const QuestionInput({
+  const QuestionInputVoiceEnabled({
     Key? key,
     required this.chat,
     required this.autofocus,
@@ -26,13 +22,13 @@ class QuestionInput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _QuestionInputState createState() => _QuestionInputState();
+  _QuestionInputVoiceEnabledState createState() =>
+      _QuestionInputVoiceEnabledState();
 }
 
-class _QuestionInputState extends State<QuestionInput> {
+class _QuestionInputVoiceEnabledState extends State<QuestionInputVoiceEnabled> {
   final FocusNode focusNode = FocusNode();
-  final TextEditingController questionController = TextEditingController();
-  final ElevenLabs elevenLabs = ElevenLabs();
+  TextEditingController questionController = TextEditingController();
   bool _isGenerating = false;
   bool _isVoiceInput = false;
   String myQuestion = '';
@@ -93,17 +89,27 @@ class _QuestionInputState extends State<QuestionInput> {
       'content': '',
     });
     try {
+      // void onProgress(chatStreamEvent) {
+      //   final firstCompletionChoice = chatStreamEvent.choices.first;
+      //   if (firstCompletionChoice.finishReason == 'stop') {
+      //     _updateGeneratingStatus(false);
+      //     return;
+      //   }
+      //   store.pushStreamMessage(chat['id'], messageIndex, {
+      //     'role': 'assistant',
+      //     'content': firstCompletionChoice.delta.content,
+      //   });
+      // }
+      //
+      // ChatGPT.sendMessageOnStream(
+      //   messages,
+      //   onProgress: onProgress,
+      // );
       final response = await ChatGPT.sendMessage(messages);
       final firstCompletionChoice = response.choices.first;
-      Uint8List audioFile = await elevenLabs
-          .fetchSpeechFromAPI(firstCompletionChoice.message.content);
-      var uuid = Uuid();
-      String audioFilename =
-          await elevenLabs.saveSpeechToFile(audioFile, "${uuid.v4()}.mp4");
       await store.replaceMessage(chat['id'], messageIndex, {
         'role': 'assistant',
         'content': firstCompletionChoice.message.content,
-        'audio': audioFilename,
       });
 
       _updateGeneratingStatus(false);
@@ -192,16 +198,9 @@ class _QuestionInputState extends State<QuestionInput> {
 
       final response = await ChatGPT.sendMessage(messages);
       final firstCompletionChoice = response.choices.first;
-      Uint8List audioFile = await elevenLabs
-          .fetchSpeechFromAPI(firstCompletionChoice.message.content);
-      var uuid = Uuid();
-      String audioFilename =
-          await elevenLabs.saveSpeechToFile(audioFile, "${uuid.v4()}.mp4");
-
       await store.replaceMessage(chat['id'], messageIndex, {
         'role': 'assistant',
         'content': firstCompletionChoice.message.content,
-        'audio': audioFilename,
       });
       _updateGeneratingStatus(false);
     } catch (error) {
@@ -239,54 +238,100 @@ class _QuestionInputState extends State<QuestionInput> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 4, 8, 4),
+          Container(
+              margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50.0),
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: Colors.grey, width: 2.0),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      focusNode: focusNode,
-                      enabled: widget.enabled,
-                      controller: questionController,
-                      minLines: 1,
-                      maxLines: 2,
-                      decoration: const InputDecoration.collapsed(
-                        hintText: 'Enter your message',
+              child: IconButton(
+                style: ElevatedButton.styleFrom(
+                  splashFactory: NoSplash.splashFactory,
+                ),
+                icon: Icon(
+                  _isVoiceInput
+                      ? Icons.keyboard
+                      : Icons.record_voice_over_rounded,
+                  size: 22,
+                ),
+                color: const Color.fromARGB(255, 145, 145, 145),
+                onPressed: () {
+                  setState(() {
+                    _isVoiceInput = !_isVoiceInput;
+                  });
+                },
+              )),
+          Expanded(
+            child: _isVoiceInput
+                ? SizedBox(
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(50.0),
+                    //   border: Border.all(color: Colors.grey, width: 2.0),
+                    // ),
+                    width: 50,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.red),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                        ),
                       ),
-                      autofocus: widget.autofocus,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        height: 24 / 18,
-                        textBaseline: TextBaseline.alphabetic,
-                      ),
-                      onChanged: onQuestionChange,
-                      textInputAction: TextInputAction.send,
-                      textCapitalization: TextCapitalization.words,
-                      enableInteractiveSelection: true,
-                      onSubmitted: (String value) {
-                        onSubmit();
-                      },
-                      onTap: () {
-                        if (widget.scrollToBottom != null) {
-                          widget.scrollToBottom!();
-                        }
-                      },
+                      child: const Text("Hold to speak"),
+                    ),
+                  )
+                : Container(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 8, 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50.0),
+                      border: Border.all(color: Colors.grey, width: 2.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            focusNode: focusNode,
+                            enabled: widget.enabled,
+                            controller: questionController,
+                            minLines: 1,
+                            maxLines: 2,
+                            decoration: const InputDecoration.collapsed(
+                              hintText: 'Enter your message',
+                            ),
+                            autofocus: widget.autofocus,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              height: 24 / 18,
+                              textBaseline: TextBaseline.alphabetic,
+                            ),
+                            onChanged: onQuestionChange,
+                            textInputAction: TextInputAction.send,
+                            textCapitalization: TextCapitalization.words,
+                            enableInteractiveSelection: true,
+                            onSubmitted: (String value) {
+                              onSubmit();
+                            },
+                            onTap: () {
+                              if (widget.scrollToBottom != null) {
+                                widget.scrollToBottom!();
+                              }
+                            },
+                          ),
+                        ),
+                        widget.enabled
+                            ? renderSubmitBtnWidget()
+                            : IgnorePointer(
+                                child: renderSubmitBtnWidget(),
+                              ),
+                      ],
                     ),
                   ),
-                  widget.enabled
-                      ? renderSubmitBtnWidget()
-                      : IgnorePointer(
-                          child: renderSubmitBtnWidget(),
-                        ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -304,6 +349,7 @@ class _QuestionInputState extends State<QuestionInput> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
         width: 50,
+        height: 50,
         child: Image(
           image: AssetImage(
               'images/${isActive ? 'submit_active_icon' : 'submit_icon'}.png'),

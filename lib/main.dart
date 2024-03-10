@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           brightness: Brightness.light,
+          useMaterial3: false,
         ),
         home: const SplashPage(),
         builder: EasyLoading.init(),

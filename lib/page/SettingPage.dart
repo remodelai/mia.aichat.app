@@ -1,3 +1,4 @@
+import 'package:aichat/page/ChatHistoryPage.dart';
 import 'package:aichat/stores/AIChatStore.dart';
 import 'package:aichat/utils/Chatgpt.dart';
 import 'package:aichat/utils/Config.dart';
@@ -105,6 +106,16 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  renderItemWidget(
+                    'images/history_icon.svg.png',
+                    Colors.transparent,
+                    32,
+                    'Chat History',
+                    () {
+                      Utils.jumpPage(context, const ChatHistoryPage());
+                    },
+                  ),
+
                   renderItemWidget(
                     'images/privacy_policy_icon.png',
                     Colors.red,

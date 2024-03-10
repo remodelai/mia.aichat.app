@@ -1,3 +1,4 @@
+import 'package:aichat/components/AduioMessage.dart';
 import 'package:aichat/components/QuestionInput.dart';
 import 'package:aichat/utils/Chatgpt.dart';
 import 'package:aichat/utils/Config.dart';
@@ -30,7 +31,8 @@ class ChatPage extends StatefulWidget {
 enum TtsState { playing, stopped, paused, continued }
 
 class _ChatPageState extends State<ChatPage> {
-  static final LottieBuilder _generatingLottie = Lottie.asset("images/loading2.json");
+  static final LottieBuilder _generatingLottie =
+      Lottie.asset("images/loading2.json");
 
   final ScrollController _listController = ScrollController();
 
@@ -251,7 +253,8 @@ class _ChatPageState extends State<ChatPage> {
                     currentState.questionController.text = tip;
                     currentState.focusNode.requestFocus();
                     currentState.questionController.selection =
-                        TextSelection.fromPosition(TextPosition(offset: tip.length));
+                        TextSelection.fromPosition(
+                            TextPosition(offset: tip.length));
                     setState(() {});
                   }
                 }
@@ -443,22 +446,36 @@ class _ChatPageState extends State<ChatPage> {
           ),
           const SizedBox(height: 10),
           customContent ??
-              MarkdownBody(
-                data: '$defaultTextPrefix${message['content']}',
-                // data: 'This is a line\nThis is another line'.replaceAll('\n', '<br>'),
-                shrinkWrap: true,
-                selectable: true,
-                styleSheet: MarkdownStyleSheet(
-                  textScaleFactor: 1.1,
-                  textAlign: WrapAlignment.start,
-                  p: TextStyle(
-                    height: 1.5,
-                    color: defaultTextColor,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MarkdownBody(
+                    data: '$defaultTextPrefix${message['content']}',
+                    shrinkWrap: true,
+                    selectable: true,
+                    styleSheet: MarkdownStyleSheet(
+                      textScaleFactor: 1.1,
+                      textAlign: WrapAlignment.start,
+                      p: TextStyle(
+                        height: 1.5,
+                        color: defaultTextColor,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                  role == "assistant"
+                      ? _renderAudioWidget(message)
+                      : Container(),
+                ],
+              )
         ],
       ),
+    );
+  }
+
+  Widget _renderAudioWidget(Map message) {
+    return Container(
+      height: 100,
+      child: AduioMessage(filepath: message['audio']),
     );
   }
 
